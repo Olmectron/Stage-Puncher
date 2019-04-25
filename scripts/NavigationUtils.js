@@ -8,7 +8,7 @@ class NavigationUtilsClass{
     this.routeName= null;
     this.page= null;
     this.context=null;
- //   this.pages=["view2", "participantes-view", "usuarios-view","reportes-view"];
+    this.pages=["shared-stages"];
 
     this.userPageListeners=[];
         this.animations={

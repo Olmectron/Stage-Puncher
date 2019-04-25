@@ -106,7 +106,7 @@ class MySharedStages extends FirebaseMixin(ParserMixin(PolymerElement)) {
         <template is="dom-if" if="[[reloadDom]]" restamp>
             <template is="dom-repeat" items="[[getPageItems(stages,actualPage,search,filtroTipo,stages.splices)]]">
             <!--<stage-item style="margin: 8px;" file-bytes="[[_getFileBytes(item.data)]]" width="250px"></stage-item>-->
-            <stage-item on-click="downloadFile" style="margin: 8px;" stage="[[item]]" width="250px" no-parse></stage-item>
+            <stage-item on-click="navigateToStage" style="margin: 8px;" stage="[[item]]" width="250px" no-parse></stage-item>
 
             </template>
         </template>
@@ -131,6 +131,10 @@ FirebaseUtils.queryCollection(this,{
   arrayName: "stages",
   orderBy: "name"
 })
+  }
+  navigateToStage(e){
+    var stage=e.model.item;
+    NavigationUtils.navigate("stage",{stageId:stage._key});
   }
  
   downloadFile(e){
