@@ -129,7 +129,8 @@ let internalMixinScreen = function(superClass) {
       return imgData;
   }
       _parseMaker(bytes){
-        var makerArray=bytes.slice(0x25,0x78 + 0x01);
+        var makerArray=bytes.slice(0x26,0x78);
+        console.warn("maker",makerArray.length);
         var maker=getWordFromHex(getHexString(makerArray));
         //this.set("stage.maker",maker);
         return maker;

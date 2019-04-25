@@ -189,6 +189,34 @@ function getHexPair(code){
         return code.toString(16).toUpperCase();
     }
 }
+/*public static int getIntFromHex(String hex){
+    if(!hex.startsWith("0x")){
+        return Integer.decode("0x"+hex);
+    }
+    else{
+        return Integer.decode(hex);
+    }
+}*/
+/*
+function getStringFromHex(hex){
+    //hex is an array
+    if(hex.length()%2!=0){
+        console.error("Hex array length is not a multiplier of 2");
+        return null;
+    }
+    else{
+        var result="";
+        for(var i=0;i<hex.length();i+=2){
+            var hexPair=hex.slice(i,i+2);
+            if(!hexPair.equals("00")){
+                char newChar=(char)getIntFromHex(hexPair);
+                result=result+String.valueOf(newChar);
+            }
+        }
+        return result;
+    }
+}*/
+ 
 function getHexString(array){
     var hex="";
     for(var i=0;i<array.length;i++){
@@ -206,9 +234,21 @@ function getWordFromHex(hex){
             var result="";
             for(var i=0;i<hex.length;i+=2){
                 var hexPair=hex.substring(i,i+2);
+                var nextPair=null;
+                if(i+3<hex.length){
+                    nextPair=hex.substring(i+2,i+4);
+                }
+                if(nextPair && nextPair!="00"){
+                    hexPair=nextPair+hexPair;
+                   
+                }
+                if(nextPair){
+                    i=i+2;
+                }
                 if(hexPair!=("00")){
                     var newChar=String.fromCharCode(getIntFromHex(hexPair));
                     result=result+newChar;
+                 
                 }
             }
             return result;
