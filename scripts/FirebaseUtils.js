@@ -360,10 +360,15 @@ window.FirebaseUtils={
         if(this.firebaseUser.email){
             user.email=this.firebaseUser.email;
         }
-        var keys=Object.keys(data);
-        for(var i=0;i<keys.length;i++){
-            user[keys[i]]=data[keys[i]];
+        
+        if(data){
+            var keys=Object.keys(data);
+
+            for(var i=0;i<keys.length;i++){
+                user[keys[i]]=data[keys[i]];
+            }
         }
+       
         return user;
     },
     setOnce:false,

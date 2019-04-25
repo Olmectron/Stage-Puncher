@@ -48,7 +48,7 @@ class MyApp extends AuthMixin(PolymerElement) {
     return html`
       <style>
         :host {
-          --app-primary-color: #4285f4;
+          --app-primary-color: var(--paper-red-600);
           --app-secondary-color: black;
 
           display: block;
@@ -92,7 +92,7 @@ class MyApp extends AuthMixin(PolymerElement) {
         .drawer-list a.iron-selected {
           color: white;
           
-          background-color: var(--paper-teal-500);
+          background-color: var(--paper-red-600);
           font-weight: bold;
         }
       </style>
@@ -117,7 +117,7 @@ class MyApp extends AuthMixin(PolymerElement) {
             <a name="view3" href="[[rootPath]]view3"><iron-icon style="margin-right: 12px;" icon="icons:info"></iron-icon>About</a>
           </iron-selector>
 
-        
+        <div style="text-align: center">v0.9.1</div>
           </div>
           <!--<stage-item stage="[[selectedStage]]" width="350px" no-parse></stage-item>-->
         </app-drawer>
