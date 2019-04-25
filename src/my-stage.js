@@ -177,7 +177,7 @@ class MyStage extends AuthMixin(ParserMixin(FirebaseMixin(ScreenMixin(Navigation
     var now=new Date().getTime();
     var resta=Math.floor((now-timestamp)/1000);
     //console.warn("RESA",resta,timestamp,now);
-    if(resta>15){
+    if(resta>6){
       if(this.downloading){
         PolymerUtils.Toast.show("A file is already being downloaded");
         return;
@@ -186,7 +186,7 @@ class MyStage extends AuthMixin(ParserMixin(FirebaseMixin(ScreenMixin(Navigation
       var context=this;
       setTimeout(function(){
         context.set("downloading",false);
-      },8000);
+      },5000);
 
 
       console.log("Downloading");
@@ -201,7 +201,7 @@ class MyStage extends AuthMixin(ParserMixin(FirebaseMixin(ScreenMixin(Navigation
 
        }
     else{
-      PolymerUtils.Toast.show("Wait "+(15-resta)+" more seconds before another download");
+      PolymerUtils.Toast.show("Wait "+(6-resta)+" more seconds before another download");
     }
   }
   sumDislike(){
