@@ -117,7 +117,7 @@ class MyApp extends AuthMixin(PolymerElement) {
             <a name="view3" href="[[rootPath]]view3"><iron-icon style="margin-right: 12px;" icon="icons:info"></iron-icon>About</a>
           </iron-selector>
 
-        <div style="text-align: center">v0.9.5</div>
+        <div style="text-align: center">v0.9.6</div>
           </div>
           <!--<stage-item stage="[[selectedStage]]" width="350px" no-parse></stage-item>-->
         </app-drawer>
