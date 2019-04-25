@@ -15,8 +15,8 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     <meta name="generator" content="Polymer Starter Kit">
     <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
 
-    <title>Smash Stages</title>
-    <meta name="description" content="Smash Stages web app">
+    <title>Stage Puncher</title>
+    <meta name="description" content="Stage Puncher web app">
 
     <!--
       The `<base>` tag below is present to support two advanced deployment options:
@@ -107,7 +107,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <script src="./scripts/HexUtils.js"></script>
 <script src="./scripts/ImageTools.js"></script>
 <script src="./scripts/FirebaseUtils.js"></script>
+<script src="./scripts/PolymerUtils.js"></script>
     <!-- Load webcomponents-loader.js to check and load any polyfills your browser needs -->
+    <script src="node_modules/web-animations-js/web-animations-next.min.js"></script>
     <script src="node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
 
     <!-- Load your application shell -->
@@ -125,6 +127,13 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
     </style>
   </head>
   <body>
+
+    
+      <div id="unique-main-app-body-tooltip-div"></div>
+      <div id="unique-main-app-body-dialog-div"></div>
+      <div id="unique-main-app-body-toast-div"></div>
+
+
     <my-app></my-app>
     <noscript>
       Please enable JavaScript to view this website.

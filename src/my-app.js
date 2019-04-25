@@ -26,6 +26,12 @@ import './my-icons.js';
 import '@polymer/paper-fab/paper-fab';
 import './dialogs/upload-stage-dialog.js';
 import '@polymer/iron-icons/iron-icons';
+import '@polymer/paper-dialog/paper-dialog';
+import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable';
+import '@polymer/neon-animation/neon-animation';
+import '@polymer/paper-button/paper-button';
+import '@polymer/paper-spinner/paper-spinner';
+import '@polymer/paper-toast/paper-toast';
 
 // Gesture events like tap and track generated from touch will not be
 // preventable, allowing for better scrolling performance.
@@ -44,6 +50,11 @@ class MyApp extends PolymerElement {
           --app-secondary-color: black;
 
           display: block;
+          --paper-dialog-scrollable: {
+            max-width: 100% !important;
+         
+            
+          };
           /*--app-drawer-width: 400px;*/
         }
 
@@ -87,7 +98,7 @@ class MyApp extends PolymerElement {
       <app-drawer-layout fullbleed="" narrow="{{narrow}}">
         <!-- Drawer content -->
         <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
-          <app-toolbar>Smash Stages</app-toolbar>
+          <app-toolbar>[[getTitle(page)]]</app-toolbar>
           <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
             <a name="shared-stages" href="[[rootPath]]shared-stages">Shared Stages</a>
             <a name="view2" href="[[rootPath]]view2">My Stages</a>
@@ -128,12 +139,30 @@ class MyApp extends PolymerElement {
   showUploadDialog(){
     PolymerUtils.Dialog.createAndShow({element:"upload-stage-dialog"});
   }
+  getTitle(page){
+    return this.pagesData[page].name;
+  }
   static get properties() {
     return {
       page: {
         type: String,
         reflectToAttribute: true,
         observer: '_pageChanged'
+      },
+      pagesData:{
+        type:Object,
+        notify:true,
+        value:{
+          "shared-stages":{
+            name:"Shared Stages"
+          },
+          "view2":{
+            name:"My Stages"
+          },
+          "view3":{
+            name:"About"
+          },
+        }
       },
       selectedStage:{
         type:Object,

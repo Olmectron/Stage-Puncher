@@ -33,6 +33,15 @@ let internalMixinScreen = function(superClass) {
         }
         
       }
+      submitUpload(success,error){
+        if(!this._file){
+          PolymerUtils.Toast.show("You haven't selected a file for upload");
+          return;
+        }
+
+        this.uploadToFirebase(this._fileBytes,this._file.name,success,error);
+
+      }
       _parseFile(file){
         var reader = new FileReader();
         var context=this;
@@ -40,6 +49,12 @@ let internalMixinScreen = function(superClass) {
             var arr=Array.from(new Uint8Array(this.result));
             var string=getHexString(arr);
               context.set("_fileBytes",arr);
+              context.set("_file",file);
+              context.fullParse(arr,function(stage){
+
+                context.set("_stage",stage);
+
+              });
               //context.set("fileString",string);
             //console.log("Huffman",getHexString(FireHuffman.decompressArray(FireHuffman.compressArray(arr))));
               //  context.uploadToFirebase(arr,file.name);

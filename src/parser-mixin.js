@@ -23,12 +23,60 @@ let internalMixinScreen = function(superClass) {
 
       }
       parseData(bytes){
-        return {maker:this._parseMaker(bytes),
-        name: this._parseName(bytes)};
+        var stage={maker:this._parseMaker(bytes),
+          name: this._parseName(bytes),
+          createTimestamp:this._parseTimestamp(bytes),
+          size:this._parseSize(bytes)};
+          console.log("Stage",stage);
+        return stage;
+      }
+      _parseSize(bytes){
+        var size=bytes.slice(0x134,0x134+1)[0];
+        if(size==0){
+          return "small"
+        }
+        else if(size==1){
+          return "medium"
+        }
+        else if(size==2){
+          return "big";
+        }
+        else return "unknown";
+
+      }
+      _parseTimestamp(bytes){
+        var year=bytes.slice(0x1F,0x1F+0x1).concat(bytes.slice(0x1E,0x1E+0x1));
+        year=getIntFromHex(getHexString(year));
+        var month=bytes.slice(0x20,0x20+0x1);
+        month=getIntFromHex(getHexString(month));
+        var date=bytes.slice(0x21,0x21+0x1);
+        date=getIntFromHex(getHexString(date));
+
+        var time=bytes.slice(0x22,0x24+1);
+        var hours=time[0];
+        var minutes=time[1];
+        var seconds=time[2];
+        //var milliseconds=getIntFromHex(getHexString([time[3]]));
+      ////  console.log("TIME",year+"-"+month+"-"+date,hours+":"+minutes+":"+seconds);
+ 
+        return year+"-"+month+"-"+date+","+hours+":"+minutes+":"+seconds;
+
       }
       _parseName(bytes){
-        var nameArray=bytes.slice(0x10F,0x12E + 0x01);
-        var name=getWordFromHex(getHexString(nameArray));
+        var nameArray=bytes.slice(0x110,0x12F + 0x01);
+        var string=getHexString(nameArray);
+        for(var i=0;i<string.length;i+=4){
+          var part=string[i]+string[i+1]+string[i+2]+string[i+3];
+          if(part=="0000"){
+            string=string.substring(0,i);
+            break;
+          }
+        }
+        
+
+        //console.warn("NAME",nameArray.length);
+
+        var name=getWordFromHex(string);
         return name;
         //this.set("stage.name",name);
         
