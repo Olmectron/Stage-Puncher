@@ -63,7 +63,7 @@ class MySharedStages extends AuthMixin(FirebaseMixin(ParserMixin(PolymerElement)
       <paper-listbox slot="dropdown-content" style="cursor:pointer;" attr-for-selected="name" selected="{{filtroDropdown}}" class="dropdown-content">
         <paper-item name="name">Stage Name</paper-item>
         <paper-item name="maker">Stage Maker</paper-item>
-        <paper-item name="upload">Upload Timestamp</paper-item>
+        <paper-item name="upload">Upload Date</paper-item>
         <!--<paper-item name="created">Create Timestamp</paper-item>-->
         
         <paper-item name="downloads">Downloads</paper-item>
@@ -158,7 +158,8 @@ commentsRef.on('child_added', function(data) {
 FirebaseUtils.queryCollection(this,{
   collection: "stages",
   arrayName: "stages",
-  orderBy: "name"
+  orderBy: "_timestamp",
+  order: "desc"
 })
   }
   navigateToStage(e){
@@ -433,7 +434,7 @@ changeOrden(){
       filtroDropdown:{
         type:String,
         notify:true,
-        value:"name"
+        value:"upload"
       },
       search:{
         type:String,
@@ -457,7 +458,7 @@ changeOrden(){
       direccionOrden:{
           type:String,
           notitfy: true,
-          value: "asc"
+          value: "desc"
       },
       fileBytes:{
         type:Array,

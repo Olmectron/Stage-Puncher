@@ -97,6 +97,11 @@ class UploadStageDialog extends ParserMixin(FirebaseMixin(FileMixin(PolymerEleme
                       },function(err){
                         console.error("ERROR WHEN UPLOADING",err);
                         dialog.setSaving(false);
+                        if(err && err.text=="INVALID_FILE"){
+                          PolymerUtils.Toast.show("Invalid binary file");
+           
+                        }
+                        else
                         PolymerUtils.Toast.show("There was an error uploading to the server");
                       });
 

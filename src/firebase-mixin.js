@@ -22,7 +22,7 @@ let internalMixinScreen = function(superClass) {
             var dataBlob=new Blob([new Uint8Array(finalDownload)]);
             var dataFile = new File([dataBlob], stage.binaryName,{type:"binary"});
             
-            saveAs(dataBlob,stage.binaryName);
+            saveAs(dataBlob,removeDiacritics("stage_"+stage.name.replace(/ /g, "_"))+".bin");
          // //console.warn("FINAL DOWNLOAD",finalDownload);
         };
         fileReader.readAsArrayBuffer(blob);
@@ -53,6 +53,13 @@ let internalMixinScreen = function(superClass) {
           var file = new File([blob], "stage.jpg",{type:"image/jpeg"});
     
           var dataBlob=new Blob([new Uint8Array(FireHuffman.compressArray(arr))]);
+          //console.warn("DATABLOB",arr.length);
+          if(arr.length!=205208){
+            if(errorCallback)
+            errorCallback({text:"INVALID_FILE"});
+            return;
+          }
+
           var dataFile = new File([dataBlob], fileName,{type:"binary"});
           
           delete stage["dataUrl"];
