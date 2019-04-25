@@ -46,7 +46,7 @@ let internalMixinScreen = function(superClass) {
 
 
       }
-      uploadToFirebase(arr,fileName,successCallback,errorCallback){
+      uploadToFirebase(arr,fileName,options,successCallback,errorCallback){
         this.fullParse(arr,function(stage){
           //console.warn("Full parsed",stage);
           var blob=dataURItoBlob(stage.dataUrl);
@@ -58,6 +58,15 @@ let internalMixinScreen = function(superClass) {
           delete stage["dataUrl"];
           stage._timestamp=firebase.firestore.FieldValue.serverTimestamp();
           stage._user=FirebaseUtils.getUserRef(); 
+          
+          if(options){
+            var optionsKeys=Object.keys(options);
+            for(var i=0;i<optionsKeys.length;i++){
+              stage[optionsKeys[i]]=options[optionsKeys[i]];
+            }
+          }
+          //    stage=PolymerUtils.fixDataForFirebase(stage,true);
+
           var newStageKey = firebase.database().ref().child('stages').push().key;
     
 /*          firebase.database().ref('stages/' + newStageKey).set({
@@ -88,7 +97,7 @@ let internalMixinScreen = function(superClass) {
                                         //console.log("Success updating download and binary URLs");
 
                                         if(successCallback){
-                                          successCallback();
+                                          successCallback(newStageKey);
                                         }
 
                                       }).catch(function(err){

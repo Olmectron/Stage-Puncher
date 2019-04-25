@@ -78,11 +78,11 @@ class MySharedStages extends AuthMixin(FirebaseMixin(ParserMixin(PolymerElement)
       </div>
 
 
-      <div style="padding: 0px 24px; padding-bottom: 8px; background-color: white;" class="corto">
+      <div style="padding: 0px 24px; padding-bottom: 8px; background-color: white; display: flex; flex-wrap: wrap;" class="corto">
 
      
 
-    
+  <div style="flex-grow: 100;">  
   <paper-radio-group selected="{{filtroTipo}}">
   <paper-radio-button name="all">All</paper-radio-button>
   <paper-radio-button name="small">Small</paper-radio-button>
@@ -91,6 +91,19 @@ class MySharedStages extends AuthMixin(FirebaseMixin(ParserMixin(PolymerElement)
   
   </paper-radio-group>
   <paper-checkbox checked="{{myStages}}" style="margin: 0px 12px;">My Uploaded Stages</paper-checkbox>
+  </div>
+
+        <template is="dom-if" if="[[!_loggedUser.allowNsfw]]">
+
+  <paper-button style="font-size: 13px; font-weight: 500; color: var(--paper-grey-500);" on-click="allowNSFW">Allow NSFW</paper-button>   
+</template>
+
+
+<template is="dom-if" if="[[_loggedUser.allowNsfw]]">
+
+<paper-button style="font-size: 13px; font-weight: 500; color: var(--paper-grey-500);" on-click="hideNSFW">Hide NSFW</paper-button>   
+</template>
+
   </div>
 
 
@@ -368,6 +381,8 @@ changeOrden(){
 
         && ((filtroTipo && filtroTipo!="all") ? part.size==filtroTipo : true)
 
+        && (part.nsfw==true ? (_loggedUser && _loggedUser.allowNsfw) : true) 
+
         && ((myStages && _loggedUser) ? (part._user && part._user.uid==_loggedUser.uid) : true )
 
        // && ((usuario && usuario._key!="todos") ? (part.encargado ? usuario._key==part.encargado.uid : false) : true)
@@ -394,6 +409,14 @@ changeOrden(){
           "_ordenChanged(filtroDropdown,direccionOrden)"
 
       ];
+  }
+  allowNSFW(){
+    
+    this._updateUserFields({"allowNsfw":true});
+  }
+  hideNSFW(){
+    
+    this._updateUserFields({"allowNsfw":false});
   }
   static get properties(){
     return{

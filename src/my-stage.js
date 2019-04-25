@@ -99,6 +99,10 @@ class MyStage extends AuthMixin(ParserMixin(FirebaseMixin(ScreenMixin(Navigation
 
               </div>
               <div>
+
+              <div style="margin: 12px 0px;"><input spellcheck="false" id="urlInput" style="padding: 4px 8px;" value="[[getUrl(stage)]]" /><span on-click="copyToClipboard" style="height: 30px; border-radius: 5px; user-select: none; margin-left: 8px; padding: 0px 16px; cursor:pointer; position: relative;">
+              <paper-ripple></paper-ripple>Copy</span></div>  
+          
               <template is="dom-if" if="[[isMyStage(stage,_loggedUser)]]">
                 <paper-button on-click="askDelete" style="font-weight: 500; color: var(--paper-red-900);"><iron-icon style="font-size: 15px; font-weight: 500; color: var(--paper-red-700);  margin-right: 8px;" icon="delete-forever"></iron-icon>Delete</paper-button>
               </template>
@@ -126,6 +130,18 @@ class MyStage extends AuthMixin(ParserMixin(FirebaseMixin(ScreenMixin(Navigation
     return this._monthsNames[fechaSplit[1]-1]+" "+fechaSplit[2]+", "+fechaSplit[0]+" "+hora;
 
   }
+  copyToClipboard(){
+    var copyText = this.shadowRoot.querySelector("#urlInput");
+    copyText.select();
+  
+    document.execCommand("copy");
+  
+  }
+  getUrl(stageKey){
+    if(stageKey)
+    return "https://smash-stages.firebaseapp.com/stage?stageId="+stageKey._key;
+    else return "--";
+}
   _paramsChanged(params){
  //   console.log("Params",params);
     
@@ -161,7 +177,7 @@ class MyStage extends AuthMixin(ParserMixin(FirebaseMixin(ScreenMixin(Navigation
     var now=new Date().getTime();
     var resta=Math.floor((now-timestamp)/1000);
     //console.warn("RESA",resta,timestamp,now);
-    if(resta>60){
+    if(resta>15){
       if(this.downloading){
         PolymerUtils.Toast.show("A file is already being downloaded");
         return;
@@ -185,7 +201,7 @@ class MyStage extends AuthMixin(ParserMixin(FirebaseMixin(ScreenMixin(Navigation
 
        }
     else{
-      PolymerUtils.Toast.show("Wait "+(60-resta)+" more seconds before another download");
+      PolymerUtils.Toast.show("Wait "+(15-resta)+" more seconds before another download");
     }
   }
   sumDislike(){

@@ -16,7 +16,9 @@ import { ParserMixin } from '../parser-mixin.js';
 import '@polymer/paper-input/paper-input';
 
 import '@polymer/paper-ripple/paper-ripple';
+import '@polymer/paper-checkbox/paper-checkbox';
 import '@polymer/iron-icons/iron-icons';
+import './success-stage-dialog.js';
 
 class UploadStageDialog extends ParserMixin(FirebaseMixin(FileMixin(PolymerElement))) {
   static get template() {
@@ -51,7 +53,7 @@ class UploadStageDialog extends ParserMixin(FirebaseMixin(FileMixin(PolymerEleme
       <!--<paper-input label="Description" value="{{description}}"></paper-input>-->
   
       <paper-input label="Maker" value="[[_stage.maker]]" disabled></paper-input>
-
+      <paper-checkbox checked="{{nsfw}}" style="margin: 8px 0px;">Not suitable for work</paper-checkbox>
   
       
       <stage-image border-radius="5px" width="300px" file-bytes="[[_fileBytes]]"></stage-image>
@@ -61,6 +63,11 @@ class UploadStageDialog extends ParserMixin(FirebaseMixin(FileMixin(PolymerEleme
   }
   static get properties(){
       return{
+        nsfw:{
+          type:Boolean,
+          notify:true,
+          value: true
+        },
         _dialogOptions:{
             type:Object,
             notify:true,
@@ -81,9 +88,11 @@ class UploadStageDialog extends ParserMixin(FirebaseMixin(FileMixin(PolymerEleme
                     text:"Upload",
                     action: function(dialog,element){
                       dialog.setSaving(true);
-                      element.submitUpload(function(){
+                      element.submitUpload({nsfw:element.nsfw},function(stageKey){
                         dialog.close();
                         PolymerUtils.Toast.show("Success uploading stage '"+element._stage.name+"'!");
+                        
+                        PolymerUtils.Dialog.createAndShow({element:"success-stage-dialog",params:[stageKey]});
 
                       },function(err){
                         console.error("ERROR WHEN UPLOADING",err);

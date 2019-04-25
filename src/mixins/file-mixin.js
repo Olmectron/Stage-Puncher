@@ -33,13 +33,13 @@ let internalMixinScreen = function(superClass) {
         }
         
       }
-      submitUpload(success,error){
+      submitUpload(options,success,error){
         if(!this._file){
           PolymerUtils.Toast.show("You haven't selected a file for upload");
           return;
         }
 
-        this.uploadToFirebase(this._fileBytes,this._file.name,success,error);
+        this.uploadToFirebase(this._fileBytes,this._file.name,options,success,error);
 
       }
       _parseFile(file){

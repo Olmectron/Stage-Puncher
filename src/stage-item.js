@@ -54,6 +54,12 @@ class StageItem extends ParserMixin(PolymerElement) {
             <div style="position: absolute; top: 0; left: 0;  border-radius: 5px 0px 5px 0px; color: white; padding: 1px 6px;  background-color: var(--paper-grey-900);">
             [[stage.maker]]
             </div>
+            <template is="dom-if" if="[[stage.nsfw]]">
+            <div style="position: absolute; top: 30px; left: 24px; right: 24px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 30px;  border-radius: 6px; color: white; padding: 1px 6px;  background-color: var(--paper-red-600);">
+            NSFW
+            </div>
+            </template>
+            
             
             <!--<div class="stage-name" style="color: white; font-weight: 600; position: absolute; bottom: 4px; right: 0px; left: 0px; text-align: center">
               [[stage.name]]
