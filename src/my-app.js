@@ -30,6 +30,7 @@ import '@polymer/paper-dialog/paper-dialog';
 import '@polymer/paper-dialog-scrollable/paper-dialog-scrollable';
 import '@polymer/neon-animation/neon-animation';
 import '@polymer/paper-button/paper-button';
+import '@polymer/iron-icon/iron-icon';
 import '@polymer/paper-spinner/paper-spinner';
 import '@polymer/paper-toast/paper-toast';
 
@@ -76,15 +77,21 @@ class MyApp extends PolymerElement {
         }
 
         .drawer-list a {
-          display: block;
+          display: flex; align-items: center;
+          
           padding: 0 16px;
           text-decoration: none;
           color: var(--app-secondary-color);
           line-height: 40px;
         }
 
+        .drawer-list a iron-icon{
+          
+        }
         .drawer-list a.iron-selected {
-          color: black;
+          color: white;
+          
+          background-color: var(--paper-teal-500);
           font-weight: bold;
         }
       </style>
@@ -98,11 +105,11 @@ class MyApp extends PolymerElement {
       <app-drawer-layout fullbleed="" narrow="{{narrow}}">
         <!-- Drawer content -->
         <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
-          <app-toolbar>[[getTitle(page)]]</app-toolbar>
+          <app-toolbar>Stage Puncher</app-toolbar>
           <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-            <a name="shared-stages" href="[[rootPath]]shared-stages">Shared Stages</a>
-            <a name="view2" href="[[rootPath]]view2">My Stages</a>
-            <a name="view3" href="[[rootPath]]view3">About</a>
+            <a name="shared-stages" href="[[rootPath]]shared-stages"><iron-icon style="margin-right: 12px;" icon="icons:folder-shared"></iron-icon>Shared Stages</a>
+            <!--<a name="view2" href="[[rootPath]]view2">My Stages</a>-->
+            <a name="view3" href="[[rootPath]]view3"><iron-icon style="margin-right: 12px;" icon="icons:info"></iron-icon>About</a>
           </iron-selector>
           <!--<stage-item stage="[[selectedStage]]" width="350px" no-parse></stage-item>-->
         </app-drawer>
@@ -113,7 +120,7 @@ class MyApp extends PolymerElement {
           <app-header slot="header" condenses="" reveals="" effects="waterfall">
             <app-toolbar>
               <paper-icon-button icon="my-icons:menu" drawer-toggle=""></paper-icon-button>
-              <div main-title="">Smash Stages</div>
+              <div main-title="">[[getTitle(page)]]</div>
             </app-toolbar>
           </app-header>
 
@@ -141,6 +148,11 @@ class MyApp extends PolymerElement {
   }
   getTitle(page){
     return this.pagesData[page].name;
+  }
+  ready(){
+    super.ready();
+    
+    _initNavigationUtils(this,this.route,"route",this.routeParams,"routeParams");
   }
   static get properties() {
     return {

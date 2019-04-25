@@ -14,7 +14,7 @@ import './stage-image.js';
 import { ParserMixin } from './parser-mixin.js';
 import '@polymer/paper-ripple/paper-ripple';
 
-class StageItem extends ParserMixin(PolymerElement) {
+class StageInfo extends ParserMixin(PolymerElement) {
   static get template() {
     return html`
       <style include="shared-styles">
@@ -110,4 +110,4 @@ class StageItem extends ParserMixin(PolymerElement) {
     }
 }
 
-window.customElements.define('stage-item', StageItem);
+window.customElements.define('stage-info', StageInfo);

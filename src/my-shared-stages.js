@@ -21,6 +21,7 @@ import '@polymer/paper-icon-button/paper-icon-button';
 import '@polymer/iron-icons/iron-icons';
 import '@polymer/paper-radio-group/paper-radio-group';
 import '@polymer/paper-radio-button/paper-radio-button';
+import './components/paginator-element.js';
 class MySharedStages extends FirebaseMixin(ParserMixin(PolymerElement)) {
   static get template() {
     return html`
@@ -35,7 +36,7 @@ class MySharedStages extends FirebaseMixin(ParserMixin(PolymerElement)) {
         }
       </style>
 
-      <div style="display: flex; padding: 10px 24px; padding-bottom: 16px; flex-wrap: wrap; align-items: flex-end; background-color: white; position: relative;" class$="[[getClass(collapseOpened)]]"> 
+      <div style="display: flex; padding: 10px 24px; padding-bottom: 0px; flex-wrap: wrap; align-items: flex-end; background-color: white; position: relative;" class$="[[getClass(collapseOpened)]]"> 
             
       <paper-input value="{{search}}" style="flex-grow: 9; margin-right: 8px;" label="Stage Search"></paper-input>
       
@@ -48,23 +49,24 @@ class MySharedStages extends FirebaseMixin(ParserMixin(PolymerElement)) {
         <!--</template>-->
                
       <template is="dom-if" if="[[isOrden(direccionOrden,'asc')]]">
-      <paper-icon-button onmouseover="PolymerUtils.Tooltip.show(event,'Orden ascendente. Por ejemplo Z, Y, X, W... A. O las fechas se muestran de la más antigua a la más reciente.')" on-click="changeOrden" class="orden-button" icon="icons:arrow-upward"></paper-icon-button>
+      <paper-icon-button onmouseover="PolymerUtils.Tooltip.show(event,'Ascending order')" on-click="changeOrden" class="orden-button" icon="icons:arrow-upward"></paper-icon-button>
     </template>
     
     <template is="dom-if" if="[[isOrden(direccionOrden,'desc')]]">
-    <paper-icon-button onmouseover="PolymerUtils.Tooltip.show(event,'Orden descendente. Por ejemplo A, B, C, D... Z. O las fechas se muestran de la más reciente a la más antigua.')" on-click="changeOrden" class="orden-button" icon="icons:arrow-downward"></paper-icon-button>
+    <paper-icon-button onmouseover="PolymerUtils.Tooltip.show(event,'Descending order')" on-click="changeOrden" class="orden-button" icon="icons:arrow-downward"></paper-icon-button>
         </template>
 
         
-      <paper-dropdown-menu label="Ordenar por" style="flex-grow: 2;" attr-for-selected="name">
+      <paper-dropdown-menu label="Order by" style="flex-grow: 2;" attr-for-selected="name">
       <paper-listbox slot="dropdown-content" style="cursor:pointer;" attr-for-selected="name" selected="{{filtroDropdown}}" class="dropdown-content">
-        <paper-item name="negocio">Nombre del negocio</paper-item>
-        <paper-item name="persona">Nombre de contacto</paper-item>
-        <paper-item name="fecha">Fecha de última acción</paper-item>
-        <paper-item name="registro">Días desde registro</paper-item>
-        <paper-item name="acciones">Número de acciones</paper-item>
-        <paper-item name="vendedores">Vendedor</paper-item>
-        <paper-item name="potenciales">Clientes potenciales</paper-item>
+        <paper-item name="name">Stage Name</paper-item>
+        <paper-item name="maker">Stage Maker</paper-item>
+        <paper-item name="upload">Upload Timestamp</paper-item>
+        <paper-item name="created">Create Timestamp</paper-item>
+        
+        <paper-item name="downloads">Downloads</paper-item>
+        <paper-item name="popular">Popular</paper-item>
+        
         <!--<paper-item name="status">Status de última visita</paper-item>-->
       </paper-listbox>
     </paper-dropdown-menu>
@@ -89,12 +91,24 @@ class MySharedStages extends FirebaseMixin(ParserMixin(PolymerElement)) {
   </div>
 
 
+
+  <div style="overflow-x: auto;">
+  <div style="display: flex; align-items: center; justify-content: center; margin: 16px;">
+  <paginator-element total-elements="[[totalElements]]" page-elements="[[elementsPerPage]]" selected-page="{{actualPage}}"></paginator-element>
+  </div>
+  </div>
+
+  
         
         <iron-selector attr-for-selected="stage" selected="{{selectedStage}}" style="display: flex; align-items: center; justify-content: center; flex-wrap: wrap;">
-        <template is="dom-repeat" items="[[getPageItems(stages,actualPage,search,filtroTipo,todos.splices)]]">
-        <!--<stage-item style="margin: 8px;" file-bytes="[[_getFileBytes(item.data)]]" width="250px"></stage-item>-->
-        <stage-item on-click="downloadFile" style="margin: 8px;" stage="[[item]]" width="250px" no-parse></stage-item>
+       
+       
+        <template is="dom-if" if="[[reloadDom]]" restamp>
+            <template is="dom-repeat" items="[[getPageItems(stages,actualPage,search,filtroTipo,stages.splices)]]">
+            <!--<stage-item style="margin: 8px;" file-bytes="[[_getFileBytes(item.data)]]" width="250px"></stage-item>-->
+            <stage-item on-click="downloadFile" style="margin: 8px;" stage="[[item]]" width="250px" no-parse></stage-item>
 
+            </template>
         </template>
         </iron-selector>
 
@@ -114,7 +128,8 @@ commentsRef.on('child_added', function(data) {
 });*/
 FirebaseUtils.queryCollection(this,{
   collection: "stages",
-  arrayName: "stages"
+  arrayName: "stages",
+  orderBy: "name"
 })
   }
  
@@ -124,18 +139,19 @@ FirebaseUtils.queryCollection(this,{
   }
   
    
-  getPageItems(clientes,page,search,filtroTipo){
-    if(!clientes){
+  getPageItems(stages,page,search,filtroTipo){
+    if(!stages){
         return;
     }
+    //console.log("ITEMS",stages,page,search,filtroTipo);
 
 
     var filteredArray=[];
-    //this.set("almightElements",clientes.length);
+    //this.set("almightElements",stages.length);
 
-      for(var i=0;i<clientes.length;i++){
-          if(this.actualFilter(clientes[i],search,filtroTipo)){
-              filteredArray.push(clientes[i]);
+      for(var i=0;i<stages.length;i++){
+          if(this.actualFilter(stages[i],search,filtroTipo)){
+              filteredArray.push(stages[i]);
           }
       }
            
@@ -168,31 +184,31 @@ changeOrden(){
     // asc, desc
     var context=this;
 
-    if(filtroDropdown=="negocio"){
+    if(filtroDropdown=="name"){
       return function(a,b){
-        var negocioA=removeDiacritics(a.negocio.toLowerCase());
-        var negocioB=removeDiacritics(b.negocio.toLowerCase());
+        var nameA=removeDiacritics(a.name.toLowerCase());
+        var nameB=removeDiacritics(b.name.  toLowerCase());
         if(direccionOrden=="asc"){
-          return negocioA.localeCompare(negocioB);
+          return nameA.localeCompare(nameB);
         }
         else{
-          return negocioB.localeCompare(negocioA);
+          return nameB.localeCompare(nameA);
 
         }
       };
     }
    
-    else if(filtroDropdown=="persona"){
+    else if(filtroDropdown=="maker"){
       return function(a,b){
         
-        var negocioA=removeDiacritics(a.displayName.toLowerCase());
-        var negocioB=removeDiacritics(b.displayName.toLowerCase());
+        var makerA=removeDiacritics(a.maker.toLowerCase());
+        var makerB=removeDiacritics(b.maker.toLowerCase());
 
         if(direccionOrden=="asc"){
-          return negocioA.localeCompare(negocioB);
+          return makerA.localeCompare(makerB);
         }
         else{
-          return negocioB.localeCompare(negocioA);
+          return makerB.localeCompare(makerA);
 
         }
       };
@@ -404,6 +420,9 @@ changeOrden(){
     }
   }
  actualFilter(part,search,filtroTipo){
+   if(search){
+     search=removeDiacritics(search.toLowerCase());
+   }
     return part && 
         (
             
@@ -421,12 +440,56 @@ changeOrden(){
         
         );
   }
+  _ordenChanged(filtroDropdown,direccionOrden){
+    if(!this.stages){
+      return;
+    }
+    var sort=this.computeSorter(filtroDropdown,direccionOrden);
+    this.stages.sort(sort);
+    this.set("reloadDom",false);
+    var context=this;
+    setTimeout(function(){
+      context.set("reloadDom",true);
+    },300);
+ //   console.log("TTTTT",this.todos);
+  }
+  static get observers(){
+      return[
+         
+          "_ordenChanged(filtroDropdown,direccionOrden)"
+
+      ];
+  }
   static get properties(){
     return{
+      reloadDom:{
+        type:Boolean,
+        notify:true,
+        value: true
+      },
+      filtroDropdown:{
+        type:String,
+        notify:true,
+        value:"name"
+      },
+      search:{
+        type:String,
+        notify:true,
+        value: null
+      },
       filtroTipo:{
         type:String,
         notify:true,
         value: "all"
+      },
+      totalElements:{
+        type:Number,
+        notify:true
+      },
+      elementsPerPage:{
+        type:Number,
+        notify:true,
+        value: 30
       },
       direccionOrden:{
           type:String,
