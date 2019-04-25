@@ -1,3 +1,19 @@
+
+firebase.auth().onAuthStateChanged(function(user) {
+    //console.log("Firebase user",user);
+    if (user) {
+        FirebaseUtils.setFirebaseUser(user);
+
+    //    console.log("ffff",user);
+    } else {
+        FirebaseUtils.setFirebaseUser(null);
+
+   
+      // No user is signed in.
+    }
+   // console.log("Data Helper User",DataHelper.getDataUser());
+  });
+
 window.FirebaseUtils={
     //Variable que contiene un objeto vacío, que contendrá el valor del usuario que inicie sesión:
     firebaseUser: null,
@@ -7,31 +23,13 @@ window.FirebaseUtils={
     standardItemKey: "_key",
     loadFirebaseController:function(dataUser){
         if(dataUser){
-/*            if(StaticDomAccess.hasPath("administrador")){
-                DataController.registerQueryBinder({name:"Grupos",collection: "grupos",options:{specialRef:firebase.firestore().collection("grupos").orderBy("name")}});
-                DataController.registerQueryBinder({name:"Peticiones",collection: "peticiones",options:{specialRef:firebase.firestore().collection("peticiones").orderBy("_timestamp")}});
-                DataController.registerQueryBinder({name:"Participantes",collection: "participantes",
-                options:{includeDeleted:true,specialRef:firebase.firestore().collection("participantes").orderBy("negocio")}});
+            //    DataController.registerQueryBinder({name:"MyStages",collection: "stages",options:{autoQuery: false, specialRef:firebase.firestore().collection("stages").orderBy("name").where("_user.uid","==",dataUser.uid)}});
             
-            }
-            else{
-                DataController.registerQueryBinder({name:"Grupos",collection: "grupos",options:{specialRef:firebase.firestore().collection("grupos").where("encargado.uid","==",dataUser.uid).orderBy("name")}});
-                DataController.registerQueryBinder({name:"Peticiones",collection: "peticiones",options:{specialRef:firebase.firestore().collection("peticiones").where("_user.uid","==",dataUser.uid).orderBy("_timestamp")}});
-                DataController.registerQueryBinder({name:"Participantes",collection: "participantes",
-                options:{specialRef:firebase.firestore().collection("participantes").where("encargado.uid","==",dataUser.uid).orderBy("negocio")}});
-
-            }*/
-            DataController.registerQueryBinder({name:"Gastos",collection: "gastos/"+dataUser.uid+"/lista",options:{autoQuery: false, specialRef:firebase.firestore().collection("gastos").doc(dataUser.uid).collection("lista").orderBy("_timestamp")}});
-            DataController.registerQueryBinder({name:"Categories",collection: "categories/"+dataUser.uid+"/lista",options:{specialRef:firebase.firestore().collection("categories").doc(dataUser.uid).collection("lista").orderBy("name")}});
-            DataController.registerQueryBinder({name:"Cuentas",collection: "cuentas/"+dataUser.uid+"/lista",options:{specialRef:firebase.firestore().collection("cuentas").doc(dataUser.uid).collection("lista").orderBy("name")}});
-            /*DataController.Gastos.getQuery();*/
-            DataController.Categories.getQuery();
-            DataController.Cuentas.getQuery();
             
         }
         else{
-            if(DataController.Grupos){
-                DataController.Grupos.getQuery().killQuery();
+            if(DataController.MyStages){
+                DataController.MyStages.getQuery().killQuery();
             }
         }
     },
@@ -330,51 +328,9 @@ window.FirebaseUtils={
             var context=this;
             this._lastDataUserQuery=firebase.firestore().collection("users").doc(user.uid)
             .onSnapshot(function(doc) {
-                if(doc.data()){
-                    var data=doc.data();
-                    if(data.profile){
-
-                        if(context._lastProfileQuery){
-                            context._lastProfileQuery();
-                        }
-                        context._lastProfileQuery=firebase.firestore().collection("user-profiles").doc(data.profile[FirebaseUtils.standardItemKey]).onSnapshot(
-                            function(profileDoc) {
-                           //     console.error("Profile Doc Data",profileDoc.data());
-                           if(profileDoc.data()){
-                                  
-                            var _beforeListString=context._beforeListString;
-                            data.accessList=profileDoc.data().accessList;
-                              context._beforeListString=JSON.stringify(profileDoc.data().accessList);
-
-                               // console.log("LOGGED USER ACCESS LIST",data.accessList);
-                              
-                              if((!_beforeListString && context._beforeListString) || (_beforeListString && _beforeListString!=context._beforeListString)){
-                                console.log('%c LOGGED USER ACCESS LIST '+data.displayName,'background: #222; color: #bada55',data.accessList);
-                                
-                              }
-                              context.setDataUser(data);
-
-
-                          }  
-                          else{
-                            data.accessList={};
-                            context.setDataUser(data);
-                          //    console.log("No access list");
-                          }
-
-                        });
-                    }
-                    else{
-                        data.accessList={};
-                        context.setDataUser(data);
-            
-                    }
-                    
-            
-                }
-                else{
-                    context.setDataUser(context._generateDataUser());
-                }
+                
+                    context.setDataUser(context._generateDataUser(doc.data()));
+                
             });
         }
         else{
@@ -389,7 +345,7 @@ window.FirebaseUtils={
         return this.firebaseUser;
     },
     //Función que retorna un objeto conteniendo el uid, displayName e email deol objeto firebaseUser:
-    _generateDataUser: function(){
+    _generateDataUser: function(data){
         
         if(!this.firebaseUser){
             return null;
@@ -403,6 +359,10 @@ window.FirebaseUtils={
         }
         if(this.firebaseUser.email){
             user.email=this.firebaseUser.email;
+        }
+        var keys=Object.keys(data);
+        for(var i=0;i<keys.length;i++){
+            user[keys[i]]=data[keys[i]];
         }
         return user;
     },

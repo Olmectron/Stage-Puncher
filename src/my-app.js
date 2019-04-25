@@ -33,6 +33,7 @@ import '@polymer/paper-button/paper-button';
 import '@polymer/iron-icon/iron-icon';
 import '@polymer/paper-spinner/paper-spinner';
 import '@polymer/paper-toast/paper-toast';
+import { AuthMixin } from './mixins/auth-mixin.js';
 
 // Gesture events like tap and track generated from touch will not be
 // preventable, allowing for better scrolling performance.
@@ -42,7 +43,7 @@ setPassiveTouchGestures(true);
 // in `index.html`.
 setRootPath(MyAppGlobals.rootPath);
 
-class MyApp extends PolymerElement {
+class MyApp extends AuthMixin(PolymerElement) {
   static get template() {
     return html`
       <style>
@@ -106,12 +107,18 @@ class MyApp extends PolymerElement {
       <app-drawer-layout fullbleed="" narrow="{{narrow}}">
         <!-- Drawer content -->
         <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
-          <app-toolbar>Stage Puncher</app-toolbar>
+        <div style="text-align: center;">
+        <img src="../images/logo-big.png" />
+        <div style="font-size: 26px; font-weight: 600; color: var(--paper-red-800);">Stage Puncher</div>  
+</div>
           <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
             <a name="shared-stages" href="[[rootPath]]shared-stages"><iron-icon style="margin-right: 12px;" icon="icons:folder-shared"></iron-icon>Shared Stages</a>
             <!--<a name="view2" href="[[rootPath]]view2">My Stages</a>-->
             <a name="view3" href="[[rootPath]]view3"><iron-icon style="margin-right: 12px;" icon="icons:info"></iron-icon>About</a>
           </iron-selector>
+
+        
+          </div>
           <!--<stage-item stage="[[selectedStage]]" width="350px" no-parse></stage-item>-->
         </app-drawer>
 
@@ -127,7 +134,7 @@ class MyApp extends PolymerElement {
 
           <iron-pages selected="[[page]]" attr-for-selected="name" role="main">
             <my-shared-stages name="shared-stages"></my-shared-stages>
-            <my-stage name="stage" selected-stage="{{stage}}"></my-stage>
+            <my-stage id="stage-view" name="stage" selected-stage="{{stage}}"></my-stage>
             <my-view2 name="view2"></my-view2>
             <my-view3 name="view3"></my-view3>
             <my-view404 name="view404"></my-view404>
@@ -168,8 +175,24 @@ class MyApp extends PolymerElement {
   isPage(page,constant){
     return page==constant;
   }
+  constructor(){
+    super();
+    firebase.auth().signInAnonymously();
+  }
+  _loggedChanged(user){
+    //console.log("User",user);
+  }
+  downloadFile(){
+    var stageView=this.shadowRoot.querySelector("#stage-view");
+    if(stageView){
+      stageView.downloadFile();
+    }
+  }
   static get properties() {
     return {
+      _loggedUser:{
+        observer: "_loggedChanged"
+      },
       page: {
         type: String,
         reflectToAttribute: true,

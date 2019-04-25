@@ -22,7 +22,9 @@ import '@polymer/iron-icons/iron-icons';
 import '@polymer/paper-radio-group/paper-radio-group';
 import '@polymer/paper-radio-button/paper-radio-button';
 import './components/paginator-element.js';
-class MySharedStages extends FirebaseMixin(ParserMixin(PolymerElement)) {
+import '@polymer/paper-checkbox/paper-checkbox';
+import { AuthMixin } from './mixins/auth-mixin.js';
+class MySharedStages extends AuthMixin(FirebaseMixin(ParserMixin(PolymerElement))) {
   static get template() {
     return html`
       <style include="shared-styles">
@@ -62,7 +64,7 @@ class MySharedStages extends FirebaseMixin(ParserMixin(PolymerElement)) {
         <paper-item name="name">Stage Name</paper-item>
         <paper-item name="maker">Stage Maker</paper-item>
         <paper-item name="upload">Upload Timestamp</paper-item>
-        <paper-item name="created">Create Timestamp</paper-item>
+        <!--<paper-item name="created">Create Timestamp</paper-item>-->
         
         <paper-item name="downloads">Downloads</paper-item>
         <paper-item name="popular">Popular</paper-item>
@@ -88,6 +90,7 @@ class MySharedStages extends FirebaseMixin(ParserMixin(PolymerElement)) {
   <paper-radio-button name="big">Big</paper-radio-button>
   
   </paper-radio-group>
+  <paper-checkbox checked="{{myStages}}" style="margin: 0px 12px;">My Uploaded Stages</paper-checkbox>
   </div>
 
 
@@ -104,7 +107,7 @@ class MySharedStages extends FirebaseMixin(ParserMixin(PolymerElement)) {
        
        
         <template is="dom-if" if="[[reloadDom]]" restamp>
-            <template is="dom-repeat" items="[[getPageItems(stages,actualPage,search,filtroTipo,stages.splices)]]">
+            <template is="dom-repeat" items="[[getPageItems(stages,actualPage,search,filtroTipo,myStages,_loggedUser,stages.splices)]]">
             <!--<stage-item style="margin: 8px;" file-bytes="[[_getFileBytes(item.data)]]" width="250px"></stage-item>-->
             <stage-item on-click="navigateToStage" style="margin: 8px;" stage="[[item]]" width="250px" no-parse></stage-item>
 
@@ -118,6 +121,19 @@ class MySharedStages extends FirebaseMixin(ParserMixin(PolymerElement)) {
   }
   isOrden(orden,constant){
     return orden==constant;
+  }
+  getPercentage(likes,dislikes){
+    if(!likes){
+      likes=0;
+    }
+    if(!dislikes){
+      dislikes=0;
+    }
+    var total=likes+dislikes;
+    if(total==0){
+      return 0;
+    }
+    return Math.floor((likes/total)*100);
   }
   constructor(){
     super();
@@ -143,7 +159,7 @@ FirebaseUtils.queryCollection(this,{
   }
   
    
-  getPageItems(stages,page,search,filtroTipo){
+  getPageItems(stages,page,search,filtroTipo,myStages,_loggedUser){
     if(!stages){
         return;
     }
@@ -154,7 +170,7 @@ FirebaseUtils.queryCollection(this,{
     //this.set("almightElements",stages.length);
 
       for(var i=0;i<stages.length;i++){
-          if(this.actualFilter(stages[i],search,filtroTipo)){
+          if(this.actualFilter(stages[i],search,filtroTipo,myStages,_loggedUser)){
               filteredArray.push(stages[i]);
           }
       }
@@ -239,81 +255,7 @@ changeOrden(){
       };
     }
 
-    else if(filtroDropdown=="fecha"){
-      return function(a,b){
-        
-        if(!a.lastVisit && b.lastVisit){
-          if(direccionOrden=="asc"){
-            return -1;
-          }
-          else return 1;
-          
-        }
-        else if(a.lastVisit && !b.lastVisit){
-          if(direccionOrden=="asc"){
-            return 1;
-          }
-          else return -1;
-        }
-        else if(!a.lastVisit && !b.lastVisit){
-          return 0;
-        }
-
-        var timeA=PolymerUtils.convertFirebaseTimestamp(a.lastVisit.visita);
-        var timeB=PolymerUtils.convertFirebaseTimestamp(b.lastVisit.visita);
-        if(timeA==timeB){
-          return 0;
-        }
-        else{
-
-          if(direccionOrden=="asc"){
-            return timeA>timeB ? 1 : -1;
-          }
-          else{
-            return timeA>timeB ? -1 : 1;
-          }
-        } 
-
-      };
-    }
-    else if(filtroDropdown=="vendedores"){
-      return function(a,b){
-        
-        if(!a.encargado && b.encargado){
-          if(direccionOrden=="asc"){
-            return -1;
-          }
-          else return 1;
-          
-        }
-        else if(a.encargado && !b.encargado){
-          if(direccionOrden=="asc"){
-            return 1;
-          }
-          else return -1;
-        }
-        else if(!a.encargado && !b.encargado){
-          return 0;
-        }
-
-        var timeA=removeDiacritics(a.encargado.displayName.toLowerCase());
-        var timeB=removeDiacritics(b.encargado.displayName.toLowerCase());
-        if(timeA==timeB){
-          return 0;
-        }
-        else{
-
-          if(direccionOrden=="asc"){
-            return timeA.localeCompare(timeB);
-          }
-          else{
-            return timeB.localeCompare(timeA);
-          }
-        } 
-
-      };
-    }
-    else if(filtroDropdown=="registro"){
+    else if(filtroDropdown=="upload"){
       return function(a,b){
         
         if(!a._timestamp && b._timestamp){
@@ -350,28 +292,29 @@ changeOrden(){
 
       };
     }
-    else if(filtroDropdown=="acciones"){
+    
+    else if(filtroDropdown=="downloads"){
       return function(a,b){
         
-        if(!a.acciones && b.acciones){
+        if(!a.downloads && b.downloads){
           if(direccionOrden=="asc"){
             return -1;
           }
           else return 1;
           
         }
-        else if(a.acciones && !b.acciones){
+        else if(a.downloads && !b.downloads){
           if(direccionOrden=="asc"){
             return 1;
           }
           else return -1;
         }
-        else if(!a.acciones && !b.acciones){
+        else if(!a.downloads && !b.downloads){
           return 0;
         }
 
-        var timeA=a.acciones;
-        var timeB=b.acciones;
+        var timeA=a.downloads;
+        var timeB=b.downloads;
         if(timeA==timeB){
           return 0;
         }
@@ -387,43 +330,29 @@ changeOrden(){
 
       };
     }
-    else if(filtroDropdown=="status"){
+    else if(filtroDropdown=="popular"){
       return function(a,b){
-
-
-        if(!a.lastVisit && b.lastVisit){
-          if(direccionOrden=="asc"){
-            return -1;
-          }
-          else return 1;
-          
-        }
-        else if(a.lastVisit && !b.lastVisit){
-          if(direccionOrden=="asc"){
-            return 1;
-          }
-          else return -1;
-        }
-        else if(!a.lastVisit && !b.lastVisit){
+       
+        var timeA=context.getPercentage(a.likes,a.dislikes);
+        var timeB=context.getPercentage(b.likes,b.dislikes);
+        if(timeA==timeB){
           return 0;
         }
-
-        //console.log("A",a.lastVisit.status);
-
-        var statusA=removeDiacritics(a.lastVisit.status.name.toLowerCase());
-        var statusB=removeDiacritics(b.lastVisit.status.name.toLowerCase());
-        if(direccionOrden=="asc"){
-          return statusA.localeCompare(statusB);
-        }
         else{
-          return statusB.localeCompare(statusA);
 
-        }
+          if(direccionOrden=="asc"){
+            return timeA>timeB ? 1 : -1;
+          }
+          else{
+            return timeA>timeB ? -1 : 1;
+          }
+        } 
 
       };
     }
+    
   }
- actualFilter(part,search,filtroTipo){
+ actualFilter(part,search,filtroTipo,myStages,_loggedUser){
    if(search){
      search=removeDiacritics(search.toLowerCase());
    }
@@ -438,6 +367,8 @@ changeOrden(){
         )
 
         && ((filtroTipo && filtroTipo!="all") ? part.size==filtroTipo : true)
+
+        && ((myStages && _loggedUser) ? (part._user && part._user.uid==_loggedUser.uid) : true )
 
        // && ((usuario && usuario._key!="todos") ? (part.encargado ? usuario._key==part.encargado.uid : false) : true)
         
@@ -466,6 +397,11 @@ changeOrden(){
   }
   static get properties(){
     return{
+      myStages:{
+        type:Boolean,
+        notitfy:true,
+        value: false
+      },  
       reloadDom:{
         type:Boolean,
         notify:true,

@@ -101,11 +101,11 @@ background-color: red;
     if(e.target.files && e.target.files[0]){
           
       if(this.photo){
-        DataHelper.Storage._actualFirebasePhotoUpload(options,e.target.files[0],options.width,options.height);
+        FirebaseMixin.Storage._actualFirebasePhotoUpload(options,e.target.files[0],options.width,options.height);
         
       }
       else{
-        DataHelper.Storage._actualFirebaseUpload(options,e.target.files[0]);
+        FirebaseMixin.Storage._actualFirebaseUpload(options,e.target.files[0]);
 
       }
         

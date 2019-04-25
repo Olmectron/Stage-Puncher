@@ -5,9 +5,8 @@ let internalMixinAuth = function(superClass) {
       constructor() {
         super();
         var context=this;
-        DataHelper.addDataUserCallback(function(loggedUser){
-          //  console.log("Logged user",loggedUser);
-        //  console.error("LOOOOOOOOOOG",loggedUser);
+        FirebaseUtils.addDataUserCallback(function(loggedUser){
+          
             
             if(loggedUser){
                 context.set("_loggedUser",loggedUser);
@@ -19,7 +18,7 @@ let internalMixinAuth = function(superClass) {
             context.set("_loadedUser",true);
 
         });
-        //this.addEventListener('keypress', (e) => this._handlePress(e));
+        
       }
       _loggedUserHasPath(path,o1,o2){
 
@@ -72,34 +71,16 @@ let internalMixinAuth = function(superClass) {
           console.error("There's not a logged user right now");
           return;
         }
-        firebase.firestore().doc("users/"+this._loggedUser.uid).update(obj).then(function(){
+        firebase.firestore().doc("users/"+this._loggedUser.uid).set(obj,{merge:true}).then(function(){
           if(callback){
             callback();
           }
 
         }).catch(function(err){
-          console.error("Hubo un error guardando los datos del usuario",obj,err);
+          console.error("Error saving user data",obj,err);
         });
       }
-      _userIsProveedor(){
-        //Proveedor
-        return this._loggedUser && this._loggedUser.profile && this._loggedUser.profile.id=="1";
-      }
-      _userIsCliente(){
-        //Usuario
-        return this._loggedUser && this._loggedUser.profile && this._loggedUser.profile.id=="2";
-
-      }
-      _userIsSecretaria(){
-        //Secretaria
-        return this._loggedUser && this._loggedUser.profile && this._loggedUser.profile.id=="4";
-
-      }
-      _userIsAdministrador(){
-        //Admin
-        return this._loggedUser && this._loggedUser.profile && this._loggedUser.profile.id=="3";
-
-      }
+    
       signupPassword(data,successCallback){
         
       var dialog=PolymerUtils.Dialog.createAndShow(
@@ -127,7 +108,7 @@ let internalMixinAuth = function(superClass) {
               var redUser={displayName: data.displayName,email:user.email,
               uid:user.uid,phoneNumber: data.phone};
 
-              DataHelper.auth.saveDataUser(redUser);
+              FirebaseUtils.auth.saveDataUser(redUser);
               dialog.close();
               if(successCallback){
                 successCallback();
@@ -143,7 +124,7 @@ let internalMixinAuth = function(superClass) {
           // Handle Errors here.
           var errorCode = error.code;
           var errorMessage = error.message;
-          DataHelper.auth.showErrorToast(error);
+          FirebaseUtils.auth.showErrorToast(error);
           // ...
         });
       }
@@ -167,38 +148,18 @@ let internalMixinAuth = function(superClass) {
               var user = result.user;
               dialog.close();
               
-            DataHelper.auth.saveDataUser(user);
+            FirebaseUtils.auth.saveDataUser(user);
               if(successCallback){
                 successCallback();
               }
-              /*user.updateProfile({
-                displayName: data.displayName
-                //phoneNumber: data.phone
-              }).then(function() {
-  
-                //user.displayName=data.displayName;
-                //user.phoneNumber=data.phone;
-                var redUser={displayName: data.displayName,email:user.email,
-                uid:user.uid,phoneNumber: data.phone};
-  
-                DataHelper.auth.saveDataUser(redUser,data.isProveedor);
-                dialog.close();
-                if(successCallback){
-                  successCallback();
-                }
-    
-                // Update successful.
-              }).catch(function(error) {
-                console.error("Error updating profile",error,data);
-                // An error happened.
-              });*/
+           
             }
           ).catch(function(error) {
             // Handle Errors here.
             var errorCode = error.code;
             var errorMessage = error.message;
             
-            var returnError=DataHelper.auth.showErrorToast(error);
+            var returnError=FirebaseUtils.auth.showErrorToast(error);
             dialog.close();
             if(errorCallback){
               errorCallback(returnError);
@@ -216,7 +177,7 @@ let internalMixinAuth = function(superClass) {
             var token = result.credential.accessToken;
             // The signed-in user info.
             var user = result.user;
-            DataHelper.auth.saveDataUser(user);
+            FirebaseUtils.auth.saveDataUser(user);
             //console.log("Success signin with Google",result);
             // ...
           }).catch(function(error) {
@@ -228,7 +189,7 @@ let internalMixinAuth = function(superClass) {
             // The firebase.auth.AuthCredential type that was used.
             var credential = error.credential;
             console.error("Error login with Facebook",error);
-            DataHelper.auth.showErrorToast(error);
+            FirebaseUtils.auth.showErrorToast(error);
             // ...
           });
       }
@@ -242,7 +203,7 @@ let internalMixinAuth = function(superClass) {
           var token = result.credential.accessToken;
           // The signed-in user info.
           var user = result.user;
-          DataHelper.auth.saveDataUser(user);
+          FirebaseUtils.auth.saveDataUser(user);
           //console.log("Success signin with Google",result);
           // ...
         }).catch(function(error) {
@@ -254,7 +215,7 @@ let internalMixinAuth = function(superClass) {
           // The firebase.auth.AuthCredential type that was used.
           var credential = error.credential;
           console.error("Error login with Google",error);
-          DataHelper.auth.showErrorToast(error);
+          FirebaseUtils.auth.showErrorToast(error);
           // ...
         });
       }

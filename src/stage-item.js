@@ -61,7 +61,12 @@ class StageItem extends ParserMixin(PolymerElement) {
 
             <div style="padding: 4px 12px; color: var(--paper-grey-800); text-align: left;">
               <div style="font-size: 18px;  font-weight: 600;">[[stage.name]]</div>
-              <div style="font-size: 14px;  font-weight: 500;">100 downloads</div>
+              <div style="font-size: 14px;  font-weight: 500; display: flex;">
+              <div style="flex-grow: 100;">[[getNumber(stage.downloads)]] downloads</div>
+              <div style="flex-grow: 1; color: var(--paper-teal-600);   ">[[getPercentage(stage.likes,stage.dislikes)]]%</div>
+
+              
+              </div>
             </div>
 
 
@@ -69,9 +74,28 @@ class StageItem extends ParserMixin(PolymerElement) {
 
     `;
   }
+  getPercentage(likes,dislikes){
+    if(!likes){
+      likes=0;
+    }
+    if(!dislikes){
+      dislikes=0;
+    }
+    var total=likes+dislikes;
+    if(total==0){
+      return 0;
+    }
+    return Math.floor((likes/total)*100);
+  }
   constructor(){
     super();
     
+  }
+  getNumber(number){
+    if(!number){
+      return 0;
+    }
+    return number;
   }
   _fileBytesChanged(bytes){
     this.set("stage",this.parseData(bytes));

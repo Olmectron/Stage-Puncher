@@ -23,11 +23,23 @@ class MyView3 extends PolymerElement {
       </style>
 
       <div class="card">
-        <div class="circle">3</div>
-        <h1>View Three</h1>
-        <p>Modus commodo minimum eum te, vero utinam assueverit per eu.</p>
-        <p>Ea duis bonorum nec, falli paulo aliquid ei eum.Has at minim mucius aliquam, est id tempor laoreet.Pro saepe pertinax ei, ad pri animal labores suscipiantur.</p>
-      </div>
+      
+        <h1>Disclaimer</h1>
+        GUI Based on the Polymer Project. Polymer Starter Base Kit used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+<br/>
+<br/>
+
+
+Original Game: © Nintendo / HAL Laboratory, Inc. 
+Characters: © Nintendo / HAL Laboratory, Inc. / Pokémon. / Creatures Inc. / GAME FREAK inc. / SHIGESATO ITOI / APE inc. / INTELLIGENT SYSTEMS / Konami Digital Entertainment / 
+SEGA / CAPCOM CO., LTD. / BANDAI NAMCO Entertainment Inc. / MONOLITHSOFT / CAPCOM U.S.A., INC. / SQUARE ENIX CO., LTD.
+
+<br/>
+<br/>
+Copyright Disclaimer under section 107 of the Copyright Act of 1976, allowance is made for “fair use” for purposes such as criticism, comment, news reporting, teaching, scholarship, education and research.
+
+ 
+        </div>
     `;
   }
 }

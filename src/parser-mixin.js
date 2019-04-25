@@ -27,7 +27,7 @@ let internalMixinScreen = function(superClass) {
           name: this._parseName(bytes),
           createTimestamp:this._parseTimestamp(bytes),
           size:this._parseSize(bytes)};
-          console.log("Stage",stage);
+         // console.log("Stage",stage);
         return stage;
       }
       _parseSize(bytes){

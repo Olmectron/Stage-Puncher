@@ -57,12 +57,13 @@ let internalMixinScreen = function(superClass) {
           
           delete stage["dataUrl"];
           stage._timestamp=firebase.firestore.FieldValue.serverTimestamp();
+          stage._user=FirebaseUtils.getUserRef(); 
           var newStageKey = firebase.database().ref().child('stages').push().key;
     
-          firebase.database().ref('stages/' + newStageKey).set({
+/*          firebase.database().ref('stages/' + newStageKey).set({
             data: arr.toString(),
             _timestamp: firebase.database.ServerValue.TIMESTAMP
-          }).then(function(){
+          }).then(function(){*/
             firebase.firestore().collection("stages").doc(newStageKey).set(
              stage
             ).then(function(){
@@ -126,11 +127,11 @@ let internalMixinScreen = function(superClass) {
               }
             });
       
-          }).catch(function(err){
+       /*   }).catch(function(err){
             if(errorCallback){
               errorCallback(err);
             }
-          });
+          });*/
     
     
           
